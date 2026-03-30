@@ -81,6 +81,8 @@ export default function Login() {
         } catch (error) {
             console.error(error);
             setError("Wrong username or password");
+        } finally {
+            setIsLoading(false);
         }
     }
 
