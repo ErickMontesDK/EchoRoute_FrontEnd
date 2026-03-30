@@ -171,6 +171,10 @@ export default function RegisterClient() {
                     }));
                 } else {
                     setClientCodeAvailable(false);
+                    setClientData(prev => ({
+                        ...prev,
+                        code: "",
+                    }));
                 }
             })
             .catch(error => {

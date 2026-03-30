@@ -245,3 +245,46 @@
         padding: 1rem;
     }
 }
+
+@media (max-width: 576px) {
+    .activity-item {
+        padding: 1rem;
+    }
+
+    .activity-icon-container {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        min-width: 36px;
+    }
+
+    .activity-icon-container svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    .activity-item h6 {
+        font-size: 0.85rem;
+        line-height: 1.3;
+    }
+
+    .activity-item small {
+        font-size: 0.7rem;
+        white-space: nowrap;
+    }
+
+    .badge-custom {
+        font-size: 0.65rem;
+        padding: 0.2rem 0.5rem;
+    }
+
+    .description-box {
+        font-size: 0.8rem;
+        padding: 0.5rem 0.75rem;
+    }
+
+    .activity-item .d-flex.justify-content-between {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+}
