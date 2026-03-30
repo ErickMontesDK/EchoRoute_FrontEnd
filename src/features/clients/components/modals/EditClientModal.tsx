@@ -37,6 +37,8 @@ export default function EditClientModal({ isOpen, onClose, onSuccess, client, cl
 
     if (!isOpen || !client) return null;
 
+
+
     return (
         <Modal
             title="Edit Client"
@@ -51,11 +53,6 @@ export default function EditClientModal({ isOpen, onClose, onSuccess, client, cl
             buttonAction2={handleClose}
             showCloseButton={true}
         >
-            {errorMessage && (
-                <div className="alert alert-danger py-2 mb-3" role="alert">
-                    {errorMessage}
-                </div>
-            )}
             <div className="row g-3">
                 <div className="col-12">
                     <h6 className="border-bottom pb-2 text-secondary">General Information</h6>
@@ -134,6 +131,11 @@ export default function EditClientModal({ isOpen, onClose, onSuccess, client, cl
                     <input type="number" className="form-control" value={updateData.longitude} onChange={(e) => handleUpdateChange('longitude', Number(e.target.value))} />
                 </div>
             </div>
+            {errorMessage && (
+                <div className="alert alert-danger py-2 mb-3" role="alert" id="error-message">
+                    {errorMessage}
+                </div>
+            )}
         </Modal>
     );
 }

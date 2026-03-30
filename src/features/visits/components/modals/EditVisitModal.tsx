@@ -46,11 +46,6 @@ export default function EditVisitModal({ isOpen, onClose, onSuccess, visit }: Pr
             buttonAction2={handleClose}
             showCloseButton={true}
         >
-            {errorMessage && (
-                <div className="alert alert-danger py-2 mb-3" role="alert">
-                    {errorMessage}
-                </div>
-            )}
             <div className="mb-3">
                 <label htmlFor="notes" className="form-label font-bold">Notes</label>
                 <textarea
@@ -89,6 +84,11 @@ export default function EditVisitModal({ isOpen, onClose, onSuccess, visit }: Pr
                     </div>
                 </div>
             </div>
+            {errorMessage && (
+                <div className="alert alert-danger py-2 mb-3" role="alert">
+                    {errorMessage}
+                </div>
+            )}
         </Modal>
     );
 }

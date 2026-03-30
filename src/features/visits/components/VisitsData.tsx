@@ -302,6 +302,7 @@ export default function VisitsData() {
                 onClose={() => setShowEditModal(false)}
                 onSuccess={refresh}
                 visit={selectedVisit}
+                key={`edit-${selectedVisit?.id ?? 'closed'}-${showEditModal}`}
             />
 
             <DeleteVisitModal
@@ -309,6 +310,7 @@ export default function VisitsData() {
                 onClose={() => setShowDeleteModal(false)}
                 onSuccess={refresh}
                 visit={selectedVisit}
+                key={`delete-${selectedVisit?.id ?? 'closed'}-${showDeleteModal}`}
             />
         </Layout>
     );

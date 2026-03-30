@@ -53,12 +53,10 @@ export default function EditUserModal({ isOpen, onClose, onSuccess, user }: Prop
             buttonAction2={handleClose}
             showCloseButton={true}
         >
-            {errorMessage && (
-                <div className="alert alert-danger py-2 mb-3" role="alert">
-                    {errorMessage}
-                </div>
-            )}
             <div className="row g-3">
+                <div className="col-12">
+                    <h6 className="border-bottom pb-2 text-secondary">Personal Information</h6>
+                </div>
                 <div className="col-md-6">
                     <label className="form-label font-bold">First Name</label>
                     <input
@@ -97,6 +95,11 @@ export default function EditUserModal({ isOpen, onClose, onSuccess, user }: Prop
                     />
                 </div>
             </div>
+            {errorMessage && (
+                <div className="alert alert-danger py-2 mb-3" role="alert">
+                    {errorMessage}
+                </div>
+            )}
         </Modal>
     );
 }

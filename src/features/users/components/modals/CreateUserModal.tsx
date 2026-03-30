@@ -60,11 +60,6 @@ export default function CreateUserModal({ isOpen, onClose, onSuccess }: Props) {
             buttonAction2={handleClose}
             showCloseButton={true}
         >
-            {errorMessage && (
-                <div className="alert alert-danger py-2 mb-3" role="alert">
-                    {errorMessage}
-                </div>
-            )}
             <div className="row g-3">
                 <div className="col-12">
                     <h6 className="border-bottom pb-2 text-secondary">Personal Information</h6>
@@ -159,6 +154,11 @@ export default function CreateUserModal({ isOpen, onClose, onSuccess }: Props) {
                     />
                 </div>
             </div>
+            {errorMessage && (
+                <div className="alert alert-danger py-2 mb-3" role="alert">
+                    {errorMessage}
+                </div>
+            )}
         </Modal>
     );
 }

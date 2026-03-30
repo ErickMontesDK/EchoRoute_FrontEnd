@@ -291,6 +291,7 @@ export default function ClientsData() {
                 onSuccess={refresh}
                 client={selectedClient}
                 client_types={client_types}
+                key={`edit-${selectedClient?.id ?? 'closed'}-${showEditModal}`}
             />
 
             <DeleteClientModal
@@ -298,6 +299,7 @@ export default function ClientsData() {
                 onClose={() => setShowDeleteModal(false)}
                 onSuccess={refresh}
                 client={selectedClient}
+                key={`delete-${selectedClient?.id ?? 'closed'}-${showDeleteModal}`}
             />
         </Layout >
     );
