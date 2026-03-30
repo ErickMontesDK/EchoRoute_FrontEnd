@@ -250,7 +250,7 @@ export default function ClientsData() {
                     setClientTypeConfig={setClientTypeConfig}
                 />
 
-                <MapDisplay markers={markers} config={clientTypeConfig} focusedVisitId={focusedClientId} />
+                <MapDisplay markers={markers} config={clientTypeConfig} focusedVisitId={focusedClientId} setFocusedVisitId={setFocusedClientId} />
 
                 <TableDisplay
                     columns={columns}
@@ -280,6 +280,7 @@ export default function ClientsData() {
                         setFocusedClientId((client as Client).id);
                         document.getElementById('map-container')?.scrollIntoView({ behavior: 'smooth' });
                     }}
+                    focusedMarkerId={focusedClientId ?? undefined}
                 />
 
             </div>
@@ -290,6 +291,7 @@ export default function ClientsData() {
                 onSuccess={refresh}
                 client={selectedClient}
                 client_types={client_types}
+                key={`edit-${selectedClient?.id ?? 'closed'}-${showEditModal}`}
             />
 
             <DeleteClientModal
@@ -297,6 +299,7 @@ export default function ClientsData() {
                 onClose={() => setShowDeleteModal(false)}
                 onSuccess={refresh}
                 client={selectedClient}
+                key={`delete-${selectedClient?.id ?? 'closed'}-${showDeleteModal}`}
             />
         </Layout >
     );

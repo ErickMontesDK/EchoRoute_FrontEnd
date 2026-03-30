@@ -73,11 +73,6 @@ export default function ChangePasswordModal({ isOpen, onClose, onSuccess, user }
             buttonAction2={handleClose}
             showCloseButton={true}
         >
-            {errorMessage && (
-                <div className="alert alert-danger py-2 mb-3" role="alert">
-                    {errorMessage}
-                </div>
-            )}
             <div className="row g-3">
                 <div className="col-12">
                     <div className="d-flex justify-content-between align-items-center mb-2">
@@ -124,6 +119,11 @@ export default function ChangePasswordModal({ isOpen, onClose, onSuccess, user }
                     )}
                 </div>
             </div>
+            {errorMessage && (
+                <div className="alert alert-danger py-2 mb-3" role="alert">
+                    {errorMessage}
+                </div>
+            )}
         </Modal>
     );
 }

@@ -13,13 +13,16 @@ import { DashboardProps, RecentActivity } from '../pages/home';
 
 
 export default function AdminDashboard({ today, formatTimestamp, role }: DashboardProps) {
-    const timezone = localStorage.getItem("timezone") || "America/Mexico_City";
+    const businessDataStr = localStorage.getItem("business_data");
+    const businessData = businessDataStr ? JSON.parse(businessDataStr) : null;
+    const timezone = businessData?.time_zone || "America/Mexico_City";
     const todayFormatted = today.toLocaleDateString('en-CA', {
         timeZone: timezone,
         year: 'numeric',
         month: '2-digit',
         day: '2-digit'
     });
+
     const navigate = useNavigate();
 
     const [stats, setStats] = useState({

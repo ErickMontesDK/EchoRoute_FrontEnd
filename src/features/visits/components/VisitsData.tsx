@@ -262,7 +262,7 @@ export default function VisitsData() {
                     setClientTypeConfig={setClientTypeConfig}
                 />
 
-                <MapDisplay markers={markers} config={clientTypeConfig} focusedVisitId={focusedVisitId} />
+                <MapDisplay markers={markers} config={clientTypeConfig} focusedVisitId={focusedVisitId} setFocusedVisitId={setFocusedVisitId} />
 
                 <TableDisplay
                     columns={columns}
@@ -292,6 +292,8 @@ export default function VisitsData() {
                         setFocusedVisitId((visit as Visit).id);
                         document.getElementById('map-container')?.scrollIntoView({ behavior: 'smooth' });
                     }}
+                    setFocusedVisitId={setFocusedVisitId}
+                    focusedMarkerId={focusedVisitId ?? undefined}
                 />
             </div>
 
@@ -300,6 +302,7 @@ export default function VisitsData() {
                 onClose={() => setShowEditModal(false)}
                 onSuccess={refresh}
                 visit={selectedVisit}
+                key={`edit-${selectedVisit?.id ?? 'closed'}-${showEditModal}`}
             />
 
             <DeleteVisitModal
@@ -307,6 +310,7 @@ export default function VisitsData() {
                 onClose={() => setShowDeleteModal(false)}
                 onSuccess={refresh}
                 visit={selectedVisit}
+                key={`delete-${selectedVisit?.id ?? 'closed'}-${showDeleteModal}`}
             />
         </Layout>
     );

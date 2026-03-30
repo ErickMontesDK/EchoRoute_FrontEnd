@@ -157,6 +157,7 @@ export default function UsersData() {
                 isOpen={showCreateModal}
                 onClose={() => setShowCreateModal(false)}
                 onSuccess={refresh}
+                key={`create-${showCreateModal}`}
             />
 
             <EditUserModal
@@ -164,6 +165,7 @@ export default function UsersData() {
                 onClose={() => setShowEditModal(false)}
                 onSuccess={refresh}
                 user={selectedUser}
+                key={`edit-${selectedUser?.id ?? 'closed'}-${showEditModal}`}
             />
 
             <DeleteUserModal
@@ -171,6 +173,7 @@ export default function UsersData() {
                 onClose={() => setShowDeleteModal(false)}
                 onSuccess={refresh}
                 user={selectedUser}
+                key={`delete-${selectedUser?.id ?? 'closed'}-${showDeleteModal}`}
             />
 
             <ChangePasswordModal
@@ -178,6 +181,7 @@ export default function UsersData() {
                 onClose={() => setShowPasswordModal(false)}
                 onSuccess={refresh}
                 user={selectedUser}
+                key={`password-${selectedUser?.id ?? 'closed'}-${showPasswordModal}`}
             />
 
         </Layout>

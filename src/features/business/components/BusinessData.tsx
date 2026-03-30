@@ -330,11 +330,11 @@ export default function BusinessData() {
                         </div>
                         <div className="col-md-4">
                             <label className="form-label fw-bold">Max Distance <br /> ({formData.distance_unit})</label>
-                            <input type="number" className="form-control" value={formData.max_valid_distance} onChange={(e) => setFormData({ ...formData, max_valid_distance: Number(e.target.value) })} min="0" required />
+                            <input type="number" className="form-control" value={formData.max_valid_distance} onChange={(e) => setFormData({ ...formData, max_valid_distance: Number(e.target.value) })} min="0" max="1000" step="1" required />
                         </div>
                         <div className="col-md-4">
                             <label className="form-label fw-bold">Min Time <br /> (min)</label>
-                            <input type="number" className="form-control" value={formData.min_time_between_visits} onChange={(e) => setFormData({ ...formData, min_time_between_visits: Number(e.target.value) })} min="0" required />
+                            <input type="number" className="form-control" value={formData.min_time_between_visits} onChange={(e) => setFormData({ ...formData, min_time_between_visits: Number(e.target.value) })} min="0" max="60" step="1" required />
                         </div>
                     </div>
                 </Modal>

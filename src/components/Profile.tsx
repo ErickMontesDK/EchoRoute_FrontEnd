@@ -81,11 +81,7 @@ export default function Profile() {
                                 <span className="profile-role-badge">{user.role}</span>
                                 <span className="profile-username">@{user.username}</span>
                             </div>
-                            {passwordMessage.message && (
-                                <div className={`small mt-1 ${passwordMessage.error ? 'text-danger' : 'text-success'}`}>
-                                    {passwordMessage.message}
-                                </div>
-                            )}
+
                         </div>
                     </div>
                 </header>
@@ -169,6 +165,7 @@ export default function Profile() {
                 <Modal
                     title="Change Password"
                     message={`Please enter your current password and your new password below.`}
+                    key={showPasswordModal.toString()}
                     buttonText1="Update Password"
                     buttonText2="Cancel"
                     isForm={true}

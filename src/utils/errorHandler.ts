@@ -4,9 +4,12 @@ export const parseApiError = (error: any): string => {
     if (!data) return error?.message || "Unknown error";
 
     if (data.message && typeof data.message === 'object') {
-        return Object.values(data.message)
-            .flat()
-            .join(', ');
+        return Object.entries(data.message)
+            .map(([field, errors]) => {
+                const msgs = Array.isArray(errors) ? errors.join(', ') : errors;
+                return `Field "${field}": ${msgs}`;
+            })
+            .join(' | ');
     }
 
     if (typeof data.message === 'string') return data.message;
