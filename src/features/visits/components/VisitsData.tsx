@@ -262,7 +262,7 @@ export default function VisitsData() {
                     setClientTypeConfig={setClientTypeConfig}
                 />
 
-                <MapDisplay markers={markers} config={clientTypeConfig} focusedVisitId={focusedVisitId} />
+                <MapDisplay markers={markers} config={clientTypeConfig} focusedVisitId={focusedVisitId} setFocusedVisitId={setFocusedVisitId} />
 
                 <TableDisplay
                     columns={columns}
@@ -292,6 +292,8 @@ export default function VisitsData() {
                         setFocusedVisitId((visit as Visit).id);
                         document.getElementById('map-container')?.scrollIntoView({ behavior: 'smooth' });
                     }}
+                    setFocusedVisitId={setFocusedVisitId}
+                    focusedMarkerId={focusedVisitId ?? undefined}
                 />
             </div>
 

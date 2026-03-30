@@ -91,3 +91,8 @@
     font-size: 10px;
     font-weight: 700;
 }
+
+.map-marker-icon.selected {
+    background-color: red !important;
+    transform: scale(1.2);
+}

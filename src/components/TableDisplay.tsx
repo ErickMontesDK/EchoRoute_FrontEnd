@@ -26,6 +26,8 @@ interface TableProps<TData> {
     onDelete?: (data: TData) => void;
     onRestore?: (data: TData) => void;
     onChangePassword?: (data: TData) => void;
+    focusedMarkerId?: number;
+    setFocusedVisitId?: (id: number) => void;
 }
 
 export default function TableDisplay<TData>({
@@ -41,7 +43,9 @@ export default function TableDisplay<TData>({
     onEdit,
     onDelete,
     onRestore,
-    onChangePassword
+    onChangePassword,
+    focusedMarkerId,
+    setFocusedVisitId
 }: TableProps<TData>) {
     const user_id = localStorage.getItem('user_id');
     const table = useReactTable({
@@ -115,8 +119,14 @@ export default function TableDisplay<TData>({
                     <tbody>
                         {table.getRowModel().rows.map(row => {
                             const rowData: any = row.original;
-                            const rowClassName = rowData.rowClassName || '';
+                            let rowClassName = rowData.rowClassName || '';
                             const cellClassName = rowData.cellClassName || {};
+                            console.log('rowData.id:', rowData.id, 'focusedMarkerId:', focusedMarkerId);
+
+
+                            if (focusedMarkerId && rowData.id === focusedMarkerId) {
+                                rowClassName += ' table-primary';
+                            }
 
                             return (
                                 <tr key={row.id} className={rowClassName}>
@@ -188,12 +198,7 @@ export default function TableDisplay<TData>({
                                                 <button
                                                     className="locate-btn btn btn-sm btn-outline-primary p-1 d-flex nowrap align-items-center justify-content-center"
                                                     title="Locate on map"
-                                                    onClick={(e) => {
-                                                        document.querySelectorAll(".locate-btn").forEach(btn => btn.classList.remove("btn-primary", "text-white"));
-                                                        const thisButton = e.currentTarget;
-                                                        thisButton.classList.add("btn-primary", "text-white");
-                                                        onLocate(row.original)
-                                                    }}
+                                                    onClick={() => onLocate(row.original)}
                                                 >
                                                     <MapPin size={14} /> Locate
                                                 </button>

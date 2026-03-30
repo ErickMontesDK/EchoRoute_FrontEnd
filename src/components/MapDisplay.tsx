@@ -32,11 +32,12 @@ export interface MapDisplayProps {
     markers?: MarkerProps[];
     config?: Record<string, { color: string; icon: string }>;
     focusedVisitId?: number | null;
+    setFocusedVisitId?: (id: number | null) => void;
 }
 
 
 
-export default function MapDisplay({ markers, config, focusedVisitId }: MapDisplayProps) {
+export default function MapDisplay({ markers, config, focusedVisitId, setFocusedVisitId }: MapDisplayProps) {
     const mapRef = useRef<any | null>(null);
     const markerRefs = useRef<Record<number, any>>({});
 
@@ -46,6 +47,12 @@ export default function MapDisplay({ markers, config, focusedVisitId }: MapDispl
 
 
     const [selectedMarker, setSelectedMarker] = useState<MarkerProps | null>(null);
+    const selectedLeafletMarkerRef = useRef<any>(null);
+    const setFocusedVisitIdRef = useRef(setFocusedVisitId);
+
+    useEffect(() => {
+        setFocusedVisitIdRef.current = setFocusedVisitId;
+    }, [setFocusedVisitId]);
 
     useEffect(() => {
         if (!focusedVisitId || !mapRef.current) return;
@@ -55,6 +62,17 @@ export default function MapDisplay({ markers, config, focusedVisitId }: MapDispl
 
         const latlng = marker.getLatLng();
         mapRef.current.flyTo(latlng, 16, { animate: true, duration: 1 });
+
+
+        if (selectedLeafletMarkerRef.current) {
+            selectedLeafletMarkerRef.current.getElement()
+                ?.querySelector('.map-marker-icon')
+                ?.classList.remove('selected');
+        }
+        marker.getElement()
+            ?.querySelector('.map-marker-icon')
+            ?.classList.add('selected');
+        selectedLeafletMarkerRef.current = marker;
 
         const markerData = markers?.find(m =>
             m.visit_id === focusedVisitId ||
@@ -146,7 +164,22 @@ export default function MapDisplay({ markers, config, focusedVisitId }: MapDispl
                     }
 
                     leafletMarker.on('click', () => {
+                        if (selectedLeafletMarkerRef.current) {
+                            selectedLeafletMarkerRef.current.getElement()
+                                ?.querySelector('.map-marker-icon')
+                                ?.classList.remove('selected');
+                        }
+
+                        leafletMarker.getElement()
+                            ?.querySelector('.map-marker-icon')
+                            ?.classList.add('selected');
+
+                        selectedLeafletMarkerRef.current = leafletMarker;
                         setSelectedMarker(marker);
+                        if (setFocusedVisitIdRef.current) {
+                            setFocusedVisitIdRef.current(marker.visit_id ?? marker.id ?? null);
+                        }
+                        console.log(marker);
                     });
 
                     bounds.extend(latLng);
