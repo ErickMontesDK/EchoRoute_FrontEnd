@@ -131,7 +131,8 @@ export const useUpdateUser = (user: User | null, setUser: (user: User | null) =>
         role: "",
         email: "",
         first_name: "",
-        last_name: ""
+        last_name: "",
+        username: ""
     });
 
     useEffect(() => {
@@ -141,7 +142,8 @@ export const useUpdateUser = (user: User | null, setUser: (user: User | null) =>
             role: user.role || "",
             email: user.email || "",
             first_name: user.first_name || "",
-            last_name: user.last_name || ""
+            last_name: user.last_name || "",
+            username: user.username || ""
         });
     }, [user])
 

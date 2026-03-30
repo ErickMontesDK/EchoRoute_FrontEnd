@@ -28,6 +28,7 @@ interface TableProps<TData> {
     onSortingChange?: OnChangeFn<SortingState>;
     onPaginationChange?: (updater: any) => void;
     editEnabled?: boolean;
+    isUserTable?: boolean;
     onLocate?: (data: TData) => void;
     onEdit?: (data: TData) => void;
     onDelete?: (data: TData) => void;
@@ -46,6 +47,7 @@ export default function TableDisplay<TData>({
     onSortingChange,
     onPaginationChange,
     editEnabled = false,
+    isUserTable = false,
     onLocate,
     onEdit,
     onDelete,
@@ -146,7 +148,7 @@ export default function TableDisplay<TData>({
                                                     data-bs-toggle="dropdown"
                                                     data-bs-boundary="viewport"
                                                     aria-expanded="false"
-                                                    disabled={parseInt(user_id || "") === parseInt(rowData.id || "")}
+                                                    disabled={isUserTable && parseInt(user_id || "") === parseInt(rowData.id || "")}
                                                 >
                                                     <EllipsisVertical size={16} />
                                                 </button>
