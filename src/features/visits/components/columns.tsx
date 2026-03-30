@@ -8,7 +8,7 @@ export const columns: ColumnDef<Visit>[] = [
     { header: 'Type', accessorKey: 'client__client_type__name', size: 130 },
     { header: 'Sector', accessorKey: 'client__sector', size: 120 },
     { header: 'Deliverer', accessorKey: 'deliverer__last_name', size: 150 },
-    { header: 'Date', accessorKey: 'visited_at', size: 130 },
+    { header: 'Date', accessorKey: 'visited_at', size: 140 },
     { header: 'Time', accessorKey: 'time', size: 120, enableSorting: false },
     { header: 'Address', accessorKey: 'address', size: 250, enableSorting: false },
     { id: 'is_productive', header: 'Prod.', accessorKey: 'is_productive_label', size: 80 },
