@@ -32,20 +32,20 @@ th {
     padding: 0 !important;
 }
 
-z td {
+td {
     padding: 0 !important;
+    vertical-align: middle !important;
 }
 
-.table-cell-content {
-    max-height: 100px;
-    /* max-width: 250px; */
-    overflow-y: auto;
+.table-cell-inner {
     padding: 0.75rem;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
     align-items: center;
+    justify-content: flex-start;
     width: 100%;
+    box-sizing: border-box;
+
 }
 
 .boolean .table-cell-content {

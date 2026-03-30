@@ -9,6 +9,12 @@ import {
 import { ArrowDownUp, ChevronDown, ChevronUp, EllipsisVertical, Key, Pencil, RotateCcw, Trash, MapPin } from 'lucide-react';
 import './../styles/table.css';
 
+declare module '@tanstack/react-table' {
+    interface ColumnMeta<TData, TValue> {
+        breakAll?: boolean;
+    }
+}
+
 interface TableProps<TData> {
     columns: ColumnDef<TData, any>[];
     data: TData[];
@@ -121,7 +127,6 @@ export default function TableDisplay<TData>({
                             const rowData: any = row.original;
                             let rowClassName = rowData.rowClassName || '';
                             const cellClassName = rowData.cellClassName || {};
-                            console.log('rowData.id:', rowData.id, 'focusedMarkerId:', focusedMarkerId);
 
 
                             if (focusedMarkerId && rowData.id === focusedMarkerId) {
@@ -215,10 +220,13 @@ export default function TableDisplay<TData>({
                                         return (
                                             <td
                                                 key={cell.id}
-                                                className={`text-dark text-center ${variantClassName}`}
-                                                style={{ width: cell.column.getSize() }}
+                                                className={`text-dark text-center ${variantClassName} table-cell`}
+                                                style={{ minWidth: cell.column.getSize() }}
                                             >
-                                                <div className="table-cell-content">
+                                                <div className="table-cell-inner" style={{
+                                                    wordBreak: cell.column.columnDef.meta?.breakAll ? 'break-all' : 'normal',
+                                                    overflowWrap: cell.column.columnDef.meta?.breakAll ? 'anywhere' : 'normal',
+                                                }}>
                                                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                                 </div>
                                             </td>
