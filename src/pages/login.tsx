@@ -46,7 +46,7 @@ export default function Login() {
             .then((response) => {
                 setBusinessInfo({
                     name: response.data.business_name,
-                    logo: response.data.logo_url
+                    logo: response.data.logo_url || "./images/logo-simple.png"
                 });
             })
             .catch((error) => {
