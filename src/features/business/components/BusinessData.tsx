@@ -202,7 +202,7 @@ export default function BusinessData() {
                     <InfoItem label="Time Zone"
                         value={businessInfo.time_zone}
                         icon={Clock} />
-                    <InfoItem label="Language / Locale"
+                    <InfoItem label="Locale"
                         value={businessInfo.locale}
                         icon={Languages} />
                     <InfoItem label="Distance Unit"

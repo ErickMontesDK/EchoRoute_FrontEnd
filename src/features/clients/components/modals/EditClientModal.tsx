@@ -53,17 +53,17 @@ export default function EditClientModal({ isOpen, onClose, onSuccess, client, cl
             buttonAction2={handleClose}
             showCloseButton={true}
         >
-            <div className="row g-3">
+            <div className="row g-4">
                 <div className="col-12">
                     <h6 className="border-bottom pb-2 text-secondary">General Information</h6>
                 </div>
                 <div className="col-md-4">
                     <label className="form-label font-bold">Code</label>
-                    <input type="text" className="form-control" value={updateData.code} onChange={(e) => handleUpdateChange('code', e.target.value)} />
+                    <input type="text" className="form-control" value={updateData.code} onChange={(e) => handleUpdateChange('code', e.target.value)} maxLength={20} />
                 </div>
                 <div className="col-md-8">
                     <label className="form-label font-bold">Name</label>
-                    <input type="text" className="form-control" value={updateData.name} onChange={(e) => handleUpdateChange('name', e.target.value)} />
+                    <input type="text" className="form-control" value={updateData.name} onChange={(e) => handleUpdateChange('name', e.target.value)} maxLength={150} />
                 </div>
                 <div className="col-md-6">
                     <Select
@@ -91,7 +91,7 @@ export default function EditClientModal({ isOpen, onClose, onSuccess, client, cl
 
                 {/* Section: Location */}
                 <div className="col-12 mt-4">
-                    <h6 className="border-bottom pb-2 text-secondary">Location</h6>
+                    <h6 className="border-bottom pb-2 text-secondary mt-4">Location</h6>
                 </div>
                 <div className="col-md-12">
                     <label className="form-label font-bold">Address</label>
@@ -116,7 +116,7 @@ export default function EditClientModal({ isOpen, onClose, onSuccess, client, cl
 
                 {/* Section: Market & Coordinates */}
                 <div className="col-12 mt-4">
-                    <h6 className="border-bottom pb-2 text-secondary">Market & Coordinates</h6>
+                    <h6 className="border-bottom pb-2 text-secondary mt-4">Market & Coordinates</h6>
                 </div>
                 <div className="col-md-4">
                     <label className="form-label font-bold">Market</label>

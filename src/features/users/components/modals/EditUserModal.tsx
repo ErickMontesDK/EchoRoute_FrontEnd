@@ -30,7 +30,7 @@ export default function EditUserModal({ isOpen, onClose, onSuccess, user }: Prop
     );
 
 
-    const isEditFormValid = !!(updateData.role && updateData.email && updateData.first_name && updateData.last_name);
+    const isEditFormValid = !!(updateData.role && updateData.email && updateData.first_name && updateData.last_name && updateData.username);
 
     const handleClose = () => {
         setErrorMessage(null);
@@ -75,13 +75,22 @@ export default function EditUserModal({ isOpen, onClose, onSuccess, user }: Prop
                         onChange={(e) => handleUpdateChange('last_name', e.target.value)}
                     />
                 </div>
-                <div className="col-12">
+                <div className="col-8">
                     <label className="form-label font-bold">Email</label>
                     <input
                         type="email"
                         className="form-control"
                         value={updateData.email}
                         onChange={(e) => handleUpdateChange('email', e.target.value)}
+                    />
+                </div>
+                <div className="col-4">
+                    <label className="form-label font-bold">Username</label>
+                    <input
+                        type="text"
+                        className="form-control"
+                        value={updateData.username}
+                        onChange={(e) => handleUpdateChange('username', e.target.value)}
                     />
                 </div>
                 <div className="col-md-6">

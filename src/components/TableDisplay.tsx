@@ -9,6 +9,13 @@ import {
 import { ArrowDownUp, ChevronDown, ChevronUp, EllipsisVertical, Key, Pencil, RotateCcw, Trash, MapPin } from 'lucide-react';
 import './../styles/table.css';
 
+declare module '@tanstack/react-table' {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    interface ColumnMeta<TData, TValue> {
+        breakAll?: boolean;
+    }
+}
+
 interface TableProps<TData> {
     columns: ColumnDef<TData, any>[];
     data: TData[];
@@ -21,6 +28,7 @@ interface TableProps<TData> {
     onSortingChange?: OnChangeFn<SortingState>;
     onPaginationChange?: (updater: any) => void;
     editEnabled?: boolean;
+    isUserTable?: boolean;
     onLocate?: (data: TData) => void;
     onEdit?: (data: TData) => void;
     onDelete?: (data: TData) => void;
@@ -39,6 +47,7 @@ export default function TableDisplay<TData>({
     onSortingChange,
     onPaginationChange,
     editEnabled = false,
+    isUserTable = false,
     onLocate,
     onEdit,
     onDelete,
@@ -121,7 +130,6 @@ export default function TableDisplay<TData>({
                             const rowData: any = row.original;
                             let rowClassName = rowData.rowClassName || '';
                             const cellClassName = rowData.cellClassName || {};
-                            console.log('rowData.id:', rowData.id, 'focusedMarkerId:', focusedMarkerId);
 
 
                             if (focusedMarkerId && rowData.id === focusedMarkerId) {
@@ -140,7 +148,7 @@ export default function TableDisplay<TData>({
                                                     data-bs-toggle="dropdown"
                                                     data-bs-boundary="viewport"
                                                     aria-expanded="false"
-                                                    disabled={parseInt(user_id || "") === parseInt(rowData.id || "")}
+                                                    disabled={isUserTable && parseInt(user_id || "") === parseInt(rowData.id || "")}
                                                 >
                                                     <EllipsisVertical size={16} />
                                                 </button>
@@ -215,10 +223,13 @@ export default function TableDisplay<TData>({
                                         return (
                                             <td
                                                 key={cell.id}
-                                                className={`text-dark text-center ${variantClassName}`}
-                                                style={{ width: cell.column.getSize() }}
+                                                className={`text-dark text-center ${variantClassName} table-cell`}
+                                                style={{ minWidth: cell.column.getSize() }}
                                             >
-                                                <div className="table-cell-content">
+                                                <div className="table-cell-inner" style={{
+                                                    wordBreak: cell.column.columnDef.meta?.breakAll ? 'break-all' : 'normal',
+                                                    overflowWrap: cell.column.columnDef.meta?.breakAll ? 'anywhere' : 'normal',
+                                                }}>
                                                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                                 </div>
                                             </td>

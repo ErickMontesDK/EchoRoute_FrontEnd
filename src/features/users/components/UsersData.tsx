@@ -149,6 +149,7 @@ export default function UsersData() {
                         setSelectedUser(user);
                         setShowPasswordModal(true);
                     }}
+                    isUserTable={true}
                 />
 
             </main>

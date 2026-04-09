@@ -127,6 +127,9 @@ export default function RegisterClient() {
                 zoom: 18,
                 addressdetails: 1,
                 _t: new Date().getTime()
+            },
+            headers: {
+                'Accept-Language': 'en'
             }
         })
             .then(response => {
@@ -171,6 +174,10 @@ export default function RegisterClient() {
                     }));
                 } else {
                     setClientCodeAvailable(false);
+                    setClientData(prev => ({
+                        ...prev,
+                        code: "",
+                    }));
                 }
             })
             .catch(error => {
