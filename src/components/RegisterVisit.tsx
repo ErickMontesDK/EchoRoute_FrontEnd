@@ -49,6 +49,39 @@ export default function RegisterVisit() {
     const [errorMessage, setErrorMessage] = useState("");
     const [isClientFound, setIsClientFound] = useState(false);
     const [scanError, setScanError] = useState("");
+    const [inputCode, setInputCode] = useState("");
+
+    const lookupClient = (code: string) => {
+        if (!code.trim()) return;
+
+        setIsScannerLoading(true);
+        setScanError("");
+        setIsClientFound(false);
+
+        // Ensure we try to get location if not already getting it
+        gettingGeolocation(
+            undefined,
+            (msg) => setScanError(msg ? `Location error: ${msg}` : "")
+        );
+
+        getClientByCode(code.trim())
+            .then(data => {
+                setClientData(data);
+                setClientId(parseInt(data.id));
+                setInputCode(data.code); // Sync input with normalized code
+                gettingDatetime();
+                setIsClientFound(true);
+                setIsScannerUsed(true);
+                setIsScannerPaused(true);
+            })
+            .catch(error => {
+                setScanError(error.response?.data?.detail || "Client not found or network error.");
+                setIsClientFound(false);
+            })
+            .finally(() => {
+                setIsScannerLoading(false);
+            });
+    }
 
     const scannerPressed = () => {
         setIsClientFound(false);
@@ -61,28 +94,14 @@ export default function RegisterVisit() {
     }
 
     const handleScan = (detectedCodes: DetectedCode[]) => {
-        setIsScannerUsed(true);
-        setIsScannerLoading(true);
         const detectedCode = detectedCodes[0].rawValue;
-        setIsScannerPaused(true);
-
-        getClientByCode(detectedCode)
-            .then(data => {
-                setClientData(data);
-                setClientId(parseInt(data.id));
-                gettingDatetime();
-
-                setIsClientFound(true);
-            })
-            .catch(error => {
-                setScanError(error.response?.data?.detail || "Client not found or network error.");
-            })
-            .finally(() => {
-                setIsScannerLoading(false);
-            });
-
+        lookupClient(detectedCode);
     }
 
+    const handleManualSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        lookupClient(inputCode);
+    }
     const resetForm = () => {
         setClientData({
             name: "",
@@ -102,6 +121,7 @@ export default function RegisterVisit() {
         resetScanner();
         setErrorMessage("");
         setScanError("");
+        setInputCode("");
     }
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -146,26 +166,92 @@ export default function RegisterVisit() {
                     </header>
 
                     <section className="scanner-card">
-                        {isScannerPaused && (
-                            <button className={`btn btn-outline-primary fw-bold scanner-box ${!isScannerLoading && isScannerUsed ? isClientFound ? "scanner-box-success" : "scanner-box-error" : ""}`} type="button" onClick={scannerPressed}>
-
-                                {isScannerLoading ? (<span className="spinner-border spinner-border-sm me-2"></span>) : (
-                                    !isScannerUsed ? (
-                                        <QrCode size={48} strokeWidth={1.5} />
-                                    ) : isClientFound ? (
-                                        <CheckCircle2 size={48} strokeWidth={1.5} className="text-success" />
-                                    ) : (
-                                        <AlertCircle size={48} strokeWidth={1.5} className="text-danger" />
-                                    )
+                        <div className="search-methods-container">
+                            {/* Scanner Side */}
+                            <div className="method-side">
+                                {isScannerPaused && (
+                                    <button
+                                        className={`btn btn-outline-primary fw-bold scanner-box ${!isScannerLoading && isScannerUsed ? isClientFound ? "scanner-box-success" : "scanner-box-error" : ""}`}
+                                        type="button"
+                                        onClick={scannerPressed}
+                                    >
+                                        {isScannerLoading ? (
+                                            <span className="spinner-border spinner-border-sm me-2"></span>
+                                        ) : !isScannerUsed ? (
+                                            <QrCode size={48} strokeWidth={1.5} />
+                                        ) : isClientFound ? (
+                                            <CheckCircle2 size={48} strokeWidth={1.5} className="text-success" />
+                                        ) : (
+                                            <AlertCircle size={48} strokeWidth={1.5} className="text-danger" />
+                                        )}
+                                        {!isScannerLoading && isScannerUsed
+                                            ? isClientFound
+                                                ? "Client Found"
+                                                : "Client Not Found. Retry?"
+                                            : isScannerLoading
+                                            ? "Scanning..."
+                                            : "Scan Code"}
+                                    </button>
                                 )}
-                                {!isScannerLoading && isScannerUsed ? isClientFound ? "Client Found" : "Client Not Found. Retry?" : isScannerLoading ? "Scanning..." : "Press to Scan Code"}
-                            </button>
-                        )}
-                        {!isScannerPaused &&
-                            <CodeScannerComponent isPaused={isScannerPaused} setIsPaused={setIsScannerPaused} handleScan={handleScan} />
-                        }
+                                {!isScannerPaused && (
+                                    <CodeScannerComponent
+                                        isPaused={isScannerPaused}
+                                        setIsPaused={setIsScannerPaused}
+                                        handleScan={handleScan}
+                                    />
+                                )}
+                            </div>
+
+                            {/* Separator */}
+                            {isScannerPaused && (
+                                <div className="search-separator">
+                                    <span>OR</span>
+                                </div>
+                            )}
+
+                            {/* Manual Side */}
+                            {isScannerPaused && (
+                                <div className="method-side">
+                                    <form onSubmit={handleManualSearch} className="manual-search-group">
+                                        <label className="form-label small fw-bold text-secondary text-uppercase mb-2">
+                                            Enter Code Manually
+                                        </label>
+                                        <div className="input-group mb-3">
+                                            <span className="input-group-text bg-light border-end-0">
+                                                <QrCode size={18} className="text-secondary" />
+                                            </span>
+                                            <input
+                                                type="text"
+                                                className="form-control bg-light border-start-0 py-2"
+                                                placeholder="e.g. CLI001"
+                                                value={inputCode}
+                                                onChange={(e) => setInputCode(e.target.value)}
+                                            />
+                                        </div>
+                                        <button
+                                            type="submit"
+                                            className="btn btn-primary w-100 py-2 fw-bold d-flex align-items-center justify-content-center gap-2"
+                                            disabled={isScannerLoading || !inputCode.trim()}
+                                        >
+                                            {isScannerLoading ? (
+                                                <span className="spinner-border spinner-border-sm"></span>
+                                            ) : (
+                                                <>
+                                                    <Store size={18} />
+                                                    Find Client
+                                                </>
+                                            )}
+                                        </button>
+                                    </form>
+                                </div>
+                            )}
+                        </div>
+
                         {scanError && isScannerPaused && !isScannerLoading && (
-                            <div className="alert alert-danger mt-3 py-2 text-center d-flex align-items-center justify-content-center" role="alert">
+                            <div
+                                className="alert alert-danger mt-3 py-2 text-center d-flex align-items-center justify-content-center"
+                                role="alert"
+                            >
                                 <AlertCircle size={18} className="me-2" />
                                 <span>{scanError}</span>
                             </div>
@@ -184,9 +270,14 @@ export default function RegisterVisit() {
                                 <div className="info-item">
                                     <span className="info-label">
                                         <User size={14} className="me-1" />
-                                        Client
+                                        Client Name
                                     </span>
-                                    <input type="text" readOnly className="info-value" value={isClientFound ? clientData.name : "Scan to load client..."} />
+                                    <input
+                                        type="text"
+                                        readOnly
+                                        className="info-value"
+                                        value={isClientFound ? clientData.name : "Not identified"}
+                                    />
                                 </div>
 
                                 {isClientFound && (
@@ -194,7 +285,7 @@ export default function RegisterVisit() {
                                         <div className="info-item">
                                             <span className="info-label">
                                                 <QrCode size={14} className="me-1" />
-                                                Client Code
+                                                Verified Code
                                             </span>
                                             <input type="text" className="info-value" value={clientData.code} readOnly />
                                         </div>
