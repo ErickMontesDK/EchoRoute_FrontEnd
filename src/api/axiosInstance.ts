@@ -30,6 +30,13 @@ api.interceptors.response.use((response) => {
 
             return api(originalRequest);
         } catch (refreshError) {
+            localStorage.removeItem("role");
+            localStorage.removeItem("name");
+            localStorage.removeItem("user_id");
+            localStorage.removeItem("username");
+            localStorage.removeItem("business_name");
+            localStorage.removeItem("logo_url");
+            localStorage.removeItem("business_data");
             window.location.href = "/login";
             return Promise.reject(refreshError);
         }
