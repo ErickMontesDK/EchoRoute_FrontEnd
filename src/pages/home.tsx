@@ -1,4 +1,3 @@
-import { Navigate } from "react-router-dom";
 import Layout from "../components/Layout";
 import DeliveryHome from "../components/DeliveryHome";
 import AdminDashboard from "../components/AdminDashboard";
@@ -53,17 +52,16 @@ const DashboardHeader = ({ userName, today, locale, timezone, role }: DashboardP
 );
 
 export default function Home() {
-    const role = localStorage.getItem("role");
+    const role = localStorage.getItem("role") || "";
     const userName = localStorage.getItem("name") || "User";
     const businessDataStr = localStorage.getItem("business_data");
-    const businessData = businessDataStr ? JSON.parse(businessDataStr) : null;
+    let businessData: any = null;
+    try {
+        if (businessDataStr) businessData = JSON.parse(businessDataStr);
+    } catch { /* ignore */ }
     const timezone = businessData?.time_zone || "America/Mexico_City";
     const locale = businessData?.locale || "en-US";
     const today = new Date();
-
-    if (role === null) {
-        return <Navigate to="/login" />
-    }
 
     const formatTimestamp = (timestamp: string) => {
         try {

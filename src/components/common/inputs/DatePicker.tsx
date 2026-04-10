@@ -2,7 +2,10 @@ import React from 'react';
 import { DateTime } from 'luxon';
 
 const business = localStorage.getItem("business_data");
-const timezone = business ? JSON.parse(business).time_zone : "America/Mexico_City";
+let timezone = "America/Mexico_City";
+try {
+    if (business) timezone = JSON.parse(business).time_zone;
+} catch { /* ignore */ }
 
 interface DatePickerProps {
     name: string;

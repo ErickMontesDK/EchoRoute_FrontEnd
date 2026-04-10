@@ -14,7 +14,10 @@ import { DashboardProps, RecentActivity } from '../pages/home';
 
 export default function AdminDashboard({ today, formatTimestamp, role }: DashboardProps) {
     const businessDataStr = localStorage.getItem("business_data");
-    const businessData = businessDataStr ? JSON.parse(businessDataStr) : null;
+    let businessData: any = null;
+    try {
+        if (businessDataStr) businessData = JSON.parse(businessDataStr);
+    } catch { /* ignore */ }
     const timezone = businessData?.time_zone || "America/Mexico_City";
     const todayFormatted = today.toLocaleDateString('en-CA', {
         timeZone: timezone,
