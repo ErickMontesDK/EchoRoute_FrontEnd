@@ -9,6 +9,33 @@ const api = axios.create({
     withCredentials: true,
 });
 
+let isRefreshing = false;
+let failedQueue: Array<{
+    resolve: (value?: unknown) => void;
+    reject: (reason?: unknown) => void;
+}> = [];
+
+const processQueue = (error: unknown | null) => {
+    failedQueue.forEach((prom) => {
+        if (error) {
+            prom.reject(error);
+        } else {
+            prom.resolve();
+        }
+    });
+    failedQueue = [];
+};
+
+const clearAuthData = () => {
+    localStorage.removeItem("role");
+    localStorage.removeItem("name");
+    localStorage.removeItem("user_id");
+    localStorage.removeItem("username");
+    localStorage.removeItem("business_name");
+    localStorage.removeItem("logo_url");
+    localStorage.removeItem("business_data");
+};
+
 api.interceptors.response.use((response) => {
     return response;
 
@@ -25,24 +52,37 @@ api.interceptors.response.use((response) => {
     if (error.response && error.response.status === 401 && !originalRequest._retry) {
         originalRequest._retry = true;
 
-        try {
-            await api.post("/auth/refresh/");
+        // If a refresh is already in progress, queue this request
+        if (isRefreshing) {
+            return new Promise((resolve, reject) => {
+                failedQueue.push({ resolve, reject });
+            }).then(() => {
+                return api(originalRequest);
+            }).catch((err) => {
+                return Promise.reject(err);
+            });
+        }
 
+        isRefreshing = true;
+
+        try {
+            await axios.post(`${baseURL}/auth/refresh/`, null, { withCredentials: true });
+            processQueue(null);
             return api(originalRequest);
         } catch (refreshError) {
-            localStorage.removeItem("role");
-            localStorage.removeItem("name");
-            localStorage.removeItem("user_id");
-            localStorage.removeItem("username");
-            localStorage.removeItem("business_name");
-            localStorage.removeItem("logo_url");
-            localStorage.removeItem("business_data");
-            window.location.href = "/login";
+            processQueue(refreshError);
+            clearAuthData();
+            // Only redirect to /login if we're not already there (avoids infinite reload)
+            if (window.location.pathname !== "/login") {
+                window.location.href = "/login";
+            }
             return Promise.reject(refreshError);
+        } finally {
+            isRefreshing = false;
         }
     }
 
     return Promise.reject(error);
 });
 
-export { api };
+export { api, clearAuthData };

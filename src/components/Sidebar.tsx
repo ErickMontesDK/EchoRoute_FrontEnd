@@ -11,6 +11,7 @@ import {
     Users
 } from 'lucide-react';
 
+import { clearAuthData } from '../api/axiosInstance';
 import '../styles/layout.css';
 
 interface SidebarVars {
@@ -24,14 +25,7 @@ export default function Sidebar({ role, name, isOpen, setIsOpen }: SidebarVars) 
     const businessName = localStorage.getItem("business_name") || "EchoRoute";
     const logoUrl = localStorage.getItem("logo_url") || "./images/logo-simple.png";
     const handleLogout = () => {
-
-        localStorage.removeItem("role");
-        localStorage.removeItem("name");
-        localStorage.removeItem("user_id");
-        localStorage.removeItem("username");
-        localStorage.removeItem("business_name");
-        localStorage.removeItem("logo_url");
-        localStorage.removeItem("business_data");
+        clearAuthData();
         window.location.href = "/login";
     };
 

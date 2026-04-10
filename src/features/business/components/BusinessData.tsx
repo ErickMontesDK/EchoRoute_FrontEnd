@@ -36,8 +36,15 @@ export default function BusinessData() {
     const { business: businessInfo, loading, error, refresh } = useBusiness();
 
     const business = localStorage.getItem("business_data");
-    const timezone = business ? JSON.parse(business).time_zone : "America/Mexico_City";
-    const locale = business ? JSON.parse(business).locale : "es-ES";
+    let timezone = "America/Mexico_City";
+    let locale = "es-ES";
+    try {
+        if (business) {
+            const parsed = JSON.parse(business);
+            timezone = parsed.time_zone || timezone;
+            locale = parsed.locale || locale;
+        }
+    } catch { /* ignore */ }
 
     const [showEditModal, setShowEditModal] = useState(false);
     const [urlError, setUrlError] = useState("");

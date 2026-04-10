@@ -29,7 +29,10 @@ function App() {
     <Router>
       <Routes>
         <Route path="/login" element={<Login />} />
-        <Route path="/home" element={<Home />} />
+        <Route element={<ProtectedRoutes allowedRoles={['admin', 'operator', 'delivery']} />}>
+          <Route path="/home" element={<Home />} />
+          <Route path="/profile" element={<Profile />} />
+        </Route>
         <Route element={<ProtectedRoutes allowedRoles={['delivery']} />}>
           <Route path="/register-visit" element={<RegisterVisit />} />
         </Route>
@@ -48,7 +51,6 @@ function App() {
         <Route element={<ProtectedRoutes allowedRoles={['admin']} />}>
           <Route path="/business-data" element={<BusinessData />} />
         </Route>
-        <Route path="/profile" element={<Profile />} />
         <Route path="*" element={<Navigate to="/home" />} />
       </Routes>
     </Router>

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Navigate, Outlet } from "react-router-dom";
-import { api } from "../api/axiosInstance";
+import { api, clearAuthData } from "../api/axiosInstance";
 import { getBusinessInfo } from "../features/business/api/businessServices";
 
 export default function ProtectedRoutes({ allowedRoles }: { allowedRoles: string[] }) {
@@ -11,7 +11,14 @@ export default function ProtectedRoutes({ allowedRoles }: { allowedRoles: string
     useEffect(() => {
         api.get("/users/me/")
             .then((res) => {
-                setRole(res.data.role.toLowerCase());
+                const userRole = res.data.role.toLowerCase();
+                setRole(userRole);
+
+                // Ensure localStorage stays in sync with server data
+                localStorage.setItem("role", userRole);
+                localStorage.setItem("name", res.data.full_name);
+                localStorage.setItem("user_id", res.data.id);
+                localStorage.setItem("username", res.data.username);
 
                 const businessData = localStorage.getItem("business_data");
                 if (!businessData || businessData === "") {
@@ -39,13 +46,7 @@ export default function ProtectedRoutes({ allowedRoles }: { allowedRoles: string
     }
 
     if (!role || role === "") {
-        localStorage.removeItem("role");
-        localStorage.removeItem("name");
-        localStorage.removeItem("user_id");
-        localStorage.removeItem("username");
-        localStorage.removeItem("business_name");
-        localStorage.removeItem("logo_url");
-        localStorage.removeItem("business_data");
+        clearAuthData();
         return <Navigate to="/login" />;
     }
 
