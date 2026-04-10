@@ -1,5 +1,6 @@
 import axios from "axios";
-const baseURL = "/api";
+// Use /api in local dev (due to setupProxy.js) and /backend in production (due to vercel.json)
+const baseURL = process.env.NODE_ENV === 'production' ? "/backend" : "/api";
 
 const api = axios.create({
     baseURL: baseURL,
