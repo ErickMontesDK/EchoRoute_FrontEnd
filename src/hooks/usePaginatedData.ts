@@ -66,8 +66,10 @@ export function usePaginatedData<TData, TFilters>({
             signal: controller.signal
         })
             .then(data => {
-                setDataList(data.results.map(mapDataRef.current));
-                setTotalPages(data.total_pages);
+                const results = Array.isArray(data) ? data : (data?.results || []);
+                const totalPageCount = data?.total_pages || 1;
+                setDataList(results.map(mapDataRef.current));
+                setTotalPages(totalPageCount);
             })
             .catch(error => {
                 if (error.name === 'CanceledError' || error.name === 'AbortError') {
