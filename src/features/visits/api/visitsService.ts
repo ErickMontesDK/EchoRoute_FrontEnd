@@ -20,7 +20,7 @@ interface VisitParams {
 const getVisits = async (params: VisitParams) => {
     try {
         const { signal, ...restParams } = params;
-        const response = await api.get("/visits", { params: restParams, signal });
+        const response = await api.get("/visits/", { params: restParams, signal });
         return response.data as {
             count: number;
             results: any[];
