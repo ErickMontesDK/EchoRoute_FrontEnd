@@ -17,6 +17,7 @@ interface DetectedCode {
     rawValue: string;
 }
 
+const isDemoMode = process.env.REACT_APP_DEMO_MODE === "True";
 export default function RegisterClient() {
     const navigate = useNavigate();
 
@@ -29,6 +30,7 @@ export default function RegisterClient() {
         isScannerUsed, setIsScannerUsed,
         isScannerLoading, setIsScannerLoading,
         startScanner, resetScanner } = useScanner();
+    const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
 
     const [clientData, setClientData] = useState({
         code: "",
@@ -81,6 +83,11 @@ export default function RegisterClient() {
         if (!latitude || !longitude) {
             setError("Please capture the GPS coordinates before registering.");
             window.scrollTo({ top: 0, behavior: 'smooth' });
+            return;
+        }
+
+        if (isDemoMode) {
+            setIsDemoModalOpen(true);
             return;
         }
 
@@ -367,6 +374,20 @@ export default function RegisterClient() {
                             buttonAction2={() => navigate("/home")}
                             icon={<CheckCircle2 size={48} />}
                             isVertical={true}
+                            variant="success"
+                        />
+                    )}
+
+                    {isDemoModalOpen && (
+                        <Modal
+                            title="Demo Mode"
+                            message="This action is not allowed in Demo Mode. To protect data integrity, registering new clients is disabled in this environment."
+                            buttonText1={<><Home size={20} className="me-2" />Back to Home</>}
+                            buttonText2={""}
+                            buttonAction1={() => navigate("/home")}
+                            buttonAction2={() => {}}
+                            variant="info"
+                            icon={<AlertCircle size={48} />}
                         />
                     )}
 

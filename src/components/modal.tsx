@@ -11,6 +11,7 @@ interface ModalProps {
     isForm?: boolean;
     isSubmitDisabled?: boolean;
     showCloseButton?: boolean;
+    variant?: 'success' | 'danger' | 'warning' | 'info';
 }
 
 export default function Modal({
@@ -25,7 +26,8 @@ export default function Modal({
     isVertical = false,
     isForm = false,
     isSubmitDisabled = false,
-    showCloseButton = false
+    showCloseButton = false,
+    variant = 'success'
 }: ModalProps) {
     const handleFormSubmit = (e: React.FormEvent) => {
         if (isForm) {
@@ -76,7 +78,7 @@ export default function Modal({
 
                     <div className="modal-body p-5 text-center">
                         {icon &&
-                            <div className="mb-4 d-inline-flex align-items-center justify-content-center" style={{ width: '80px', height: '80px', backgroundColor: 'var(--success-subtle)', borderRadius: '50%', color: 'var(--success-color)' }}>
+                            <div className="mb-4 d-inline-flex align-items-center justify-content-center" style={{ width: '80px', height: '80px', backgroundColor: `var(--${variant}-subtle)`, borderRadius: '50%', color: `var(--${variant}-color)` }}>
                                 {icon}
                             </div>
                         }

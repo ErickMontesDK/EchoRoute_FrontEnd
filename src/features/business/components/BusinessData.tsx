@@ -1,11 +1,14 @@
 import Layout from "../../../components/Layout";
 import { useState, useEffect } from "react";
-import { Briefcase, Globe, Languages, Ruler, Navigation, Clock, Calendar, Edit3, CircleCheck, Link, Tag, Plus, Trash2 } from "lucide-react";
-import Modal from "../../../components/modal";
-import { useBusiness, useUpdateBusiness } from "../hooks/useBusiness";
-import { ClientType, createClientType, deleteClientType, getClientTypes, updateClientType } from "../../client_types/api/clientTypesService";
+import { Briefcase, Globe, Languages, Ruler, Navigation, Clock, Calendar, Edit3, CircleCheck, Tag, Plus, Trash2 } from "lucide-react";
+import { useBusiness } from "../hooks/useBusiness";
+import { ClientType, getClientTypes } from "../../client_types/api/clientTypesService";
 import "../../../styles/business-data.css";
 
+// Modals
+import EditBusinessModal from "./modals/EditBusinessModal";
+import ClientTypeModal from "./modals/ClientTypeModal";
+import DeleteClientTypeModal from "./modals/DeleteClientTypeModal";
 
 const InfoCard = ({ title, icon: Icon, children, bgColor = "primary" }: any) => (
     <div className="col-lg-6">
@@ -35,40 +38,27 @@ export default function BusinessData() {
 
     const { business: businessInfo, loading, error, refresh } = useBusiness();
 
-    const business = localStorage.getItem("business_data");
+    const businessDataStorage = localStorage.getItem("business_data");
     let timezone = "America/Mexico_City";
     let locale = "es-ES";
     try {
-        if (business) {
-            const parsed = JSON.parse(business);
+        if (businessDataStorage) {
+            const parsed = JSON.parse(businessDataStorage);
             timezone = parsed.time_zone || timezone;
             locale = parsed.locale || locale;
         }
     } catch { /* ignore */ }
 
-    const [showEditModal, setShowEditModal] = useState(false);
-    const [urlError, setUrlError] = useState("");
     const [imgError, setImgError] = useState(false);
-
-    const {
-        business: formData,
-        setBusiness: setFormData,
-        updateBusiness,
-        isUpdating
-    } = useUpdateBusiness(() => {
-        setShowEditModal(false);
-        refresh();
-    }, (msg) => alert(msg));
-
-    useEffect(() => { setImgError(false); }, [businessInfo.logo_url]);
-
     const [refreshKey, setRefreshKey] = useState(0);
     const [clientTypes, setClientTypes] = useState<ClientType[]>([]);
+
+    const [showEditModal, setShowEditModal] = useState(false);
     const [showClientTypeModal, setShowClientTypeModal] = useState(false);
     const [showDeleteClientTypeModal, setShowDeleteClientTypeModal] = useState(false);
     const [selectedClientType, setSelectedClientType] = useState<ClientType | null>(null);
-    const [clientTypeForm, setClientTypeForm] = useState<Partial<ClientType>>({ name: "", abbreviation: "" });
-    const [clientTypeActionError, setClientTypeActionError] = useState("");
+
+    useEffect(() => { setImgError(false); }, [businessInfo.logo_url]);
 
     useEffect(() => {
         const fetchClientTypes = async () => {
@@ -82,88 +72,9 @@ export default function BusinessData() {
         fetchClientTypes();
     }, [refreshKey]);
 
-    const handleUrlChange = (url: string) => {
-        setFormData({ ...formData, logo_url: url });
-        setImgError(false);
-
-        if (!url) {
-            setUrlError("");
-            return;
-        }
-
-        try {
-            new URL(url);
-            setUrlError("Validating image URL...");
-
-            const img = new Image();
-            img.onload = () => {
-                if (img.width > 1 && img.height > 1) {
-                    setUrlError("");
-                } else {
-                    setUrlError("The URL points to an invalid image format or tracking pixel.");
-                }
-            };
-            img.onerror = () => setUrlError("The URL does not point to a valid or accessible image.");
-            img.src = url;
-        } catch {
-            setUrlError("Please enter a valid URL");
-        }
-    };
-
-    const isFormValid = !!(
-        formData.business_name && formData.time_zone && formData.locale &&
-        formData.distance_unit && formData.max_valid_distance >= 0 &&
-        formData.min_time_between_visits >= 0 && !urlError
-    );
-
-    const openEditBusinessModal = () => {
-        setFormData({ ...businessInfo });
-        setUrlError("");
-        setShowEditModal(true);
-    };
-
-    const openClientTypeModal = (type: ClientType | null = null) => {
-        setSelectedClientType(type);
-        setClientTypeForm(type ? { ...type } : { name: "", abbreviation: "" });
-        setClientTypeActionError("");
-        setShowClientTypeModal(true);
-    };
-
-    const openDeleteClientTypeModal = (type: ClientType) => {
-        setSelectedClientType(type);
-        setClientTypeActionError("");
-        setShowDeleteClientTypeModal(true);
-    };
-
-    const handleClientTypeSubmit = async () => {
-        try {
-            if (selectedClientType) {
-                await updateClientType({ ...selectedClientType, ...clientTypeForm });
-            } else {
-                await createClientType(clientTypeForm as ClientType);
-            }
-            setClientTypeActionError("");
-            setRefreshKey(prev => prev + 1);
-            setShowClientTypeModal(false);
-            setSelectedClientType(null);
-            setClientTypeForm({ name: "", abbreviation: "" });
-        } catch (err: any) {
-            console.error("Critical error in client type operation:", err);
-            setClientTypeActionError(err.message || "An error occurred while saving the client type.");
-        }
-    };
-
-    const handleDeleteClientType = async () => {
-        try {
-            await deleteClientType(selectedClientType!);
-            setClientTypeActionError("");
-            setRefreshKey(prev => prev + 1);
-            setShowDeleteClientTypeModal(false);
-            setSelectedClientType(null);
-        } catch (err: any) {
-            console.error("Critical error deleting client type:", err);
-            setClientTypeActionError(err.message || "An error occurred while deleting the client type.");
-        }
+    const handleRefresh = () => {
+        setRefreshKey(prev => prev + 1);
+        refresh();
     };
 
     if (loading && !businessInfo.business_name) {
@@ -173,12 +84,6 @@ export default function BusinessData() {
     return (
         <Layout>
             {error && <div className="alert alert-danger mb-4">{error}</div>}
-            {clientTypeActionError && (
-                <div className="alert alert-danger mb-4 alert-dismissible fade show d-flex justify-content-between align-items-center" role="alert">
-                    <div>{clientTypeActionError}</div>
-                    <button type="button" className="btn-close m-0 position-static" onClick={() => setClientTypeActionError("")} aria-label="Close"></button>
-                </div>
-            )}
 
             <header className="business-header-card mb-4 bg-white">
                 <div className="card-body p-4 d-flex align-items-center justify-content-between flex-wrap gap-3">
@@ -198,7 +103,7 @@ export default function BusinessData() {
                         </div>
                     </div>
                     <button className="btn btn-primary business-edit-btn px-4 py-2 d-flex align-items-center gap-2"
-                        onClick={openEditBusinessModal}>
+                        onClick={() => setShowEditModal(true)}>
                         <Edit3 size={18} /> Edit Configuration
                     </button>
                 </div>
@@ -248,7 +153,10 @@ export default function BusinessData() {
                         <div className="d-flex justify-content-between align-items-center mb-3">
                             <span className="text-muted small fw-bold text-uppercase">Existing Types</span>
                             <button className="btn btn-sm btn-outline-info d-flex align-items-center gap-1 rounded-pill px-3"
-                                onClick={() => openClientTypeModal(null)}>
+                                onClick={() => {
+                                    setSelectedClientType(null);
+                                    setShowClientTypeModal(true);
+                                }}>
                                 <Plus size={14} /> Add New
                             </button>
                         </div>
@@ -267,11 +175,17 @@ export default function BusinessData() {
                                     </div>
                                     <div className="d-flex gap-2">
                                         <button className="btn btn-light client-type-action-btn text-primary"
-                                            onClick={() => openClientTypeModal(type)}>
+                                            onClick={() => {
+                                                setSelectedClientType(type);
+                                                setShowClientTypeModal(true);
+                                            }}>
                                             <Edit3 size={15} />
                                         </button>
                                         <button className="btn btn-light client-type-action-btn text-danger"
-                                            onClick={() => openDeleteClientTypeModal(type)}>
+                                            onClick={() => {
+                                                setSelectedClientType(type);
+                                                setShowDeleteClientTypeModal(true);
+                                            }}>
                                             <Trash2 size={15} />
                                         </button>
                                     </div>
@@ -282,121 +196,30 @@ export default function BusinessData() {
                 </InfoCard>
             </main>
 
+            {/* Modals */}
+            <EditBusinessModal
+                isOpen={showEditModal}
+                onClose={() => setShowEditModal(false)}
+                onSuccess={handleRefresh}
+                businessData={businessInfo}
+                key={`edit-business-${showEditModal}`}
+            />
 
-            {showEditModal && (
-                <Modal
-                    title="Edit Business Configuration"
-                    message="Adjust system-wide settings for distance, time, and localization."
-                    buttonText1={isUpdating ? "Saving..." : "Save Configuration"}
-                    buttonText2="Cancel"
-                    isForm={true}
-                    isSubmitDisabled={!isFormValid || isUpdating}
-                    buttonAction1={updateBusiness}
-                    buttonAction2={() => setShowEditModal(false)}
-                    showCloseButton={true}
-                >
-                    <div className="row g-3 text-start">
-                        <div className="col-12">
-                            <label className="form-label fw-bold">Business Name</label>
-                            <input type="text" className="form-control" value={formData.business_name} onChange={(e) => setFormData({ ...formData, business_name: e.target.value })} required />
-                        </div>
-                        <div className="col-12">
-                            <label className="form-label fw-bold d-flex align-items-center gap-2"><Link size={16} /> Logo URL</label>
-                            <input type="url" className={`form-control ${urlError ? 'is-invalid' : ''}`} value={formData.logo_url} onChange={(e) => handleUrlChange(e.target.value)} />
-                            <div className={urlError ? "invalid-feedback" : "form-text small"}>{urlError || "Provide a link to your business logo image."}</div>
-                        </div>
-                        <div className="col-md-6">
-                            <label className="form-label fw-bold">Time Zone</label>
-                            <select className="form-select" value={formData.time_zone} onChange={(e) => setFormData({ ...formData, time_zone: e.target.value })} required>
-                                <option value="America/Vancouver">Vancouver (PT)</option>
-                                <option value="America/Mexico_City">Mexico City (CST)</option>
-                                <option value="America/New_York">New York (ET)</option>
-                                <option value="Europe/London">London (GMT)</option>
-                                <option value="Europe/Madrid">Madrid / Paris (CET)</option>
-                                <option value="Asia/Tokyo">Tokyo (JST)</option>
-                                <option value="Asia/Shanghai">Shanghai (CST)</option>
-                                <option value="America/Sao_Paulo">São Paulo (BRT)</option>
-                                <option value="Asia/Kolkata">India (IST)</option>
-                                <option value="Australia/Sydney">Sydney (AET)</option>
-                                <option value="UTC">UTC (Universal Time)</option>
-                            </select>
-                        </div>
-                        <div className="col-md-6">
-                            <label className="form-label fw-bold">Locale</label>
-                            <select className="form-select" value={formData.locale} onChange={(e) => setFormData({ ...formData, locale: e.target.value })} required>
-                                <option value="es-419">Spanish (Latin America)</option>
-                                <option value="en-ca">English (Canada)</option>
-                            </select>
-                        </div>
-                        <div className="col-md-4">
-                            <label className="form-label fw-bold">Distance <br />Unit</label>
-                            <select className="form-select" value={formData.distance_unit} onChange={(e) => setFormData({ ...formData, distance_unit: e.target.value })} required>
-                                <option value="m">Metric (m)</option>
-                                <option value="ft">Imperial (ft)</option>
-                            </select>
-                        </div>
-                        <div className="col-md-4">
-                            <label className="form-label fw-bold">Max Distance <br /> ({formData.distance_unit})</label>
-                            <input type="number" className="form-control" value={formData.max_valid_distance} onChange={(e) => setFormData({ ...formData, max_valid_distance: Number(e.target.value) })} min="0" max="1000" step="1" required />
-                        </div>
-                        <div className="col-md-4">
-                            <label className="form-label fw-bold">Min Time <br /> (min)</label>
-                            <input type="number" className="form-control" value={formData.min_time_between_visits} onChange={(e) => setFormData({ ...formData, min_time_between_visits: Number(e.target.value) })} min="0" max="60" step="1" required />
-                        </div>
-                    </div>
-                </Modal>
-            )}
+            <ClientTypeModal
+                isOpen={showClientTypeModal}
+                onClose={() => setShowClientTypeModal(false)}
+                onSuccess={handleRefresh}
+                selectedClientType={selectedClientType}
+                key={`client-type-${selectedClientType?.id ?? 'new'}-${showClientTypeModal}`}
+            />
 
-            {showClientTypeModal && (
-                <Modal
-                    title={selectedClientType ? "Edit Client Type" : "Add Client Type"}
-                    message={selectedClientType ? `Updating details for ${selectedClientType.name}` : "Create a new category for your clients."}
-                    buttonText1={selectedClientType ? "Update Type" : "Create Type"}
-                    buttonText2="Cancel"
-                    isForm={true}
-                    buttonAction1={handleClientTypeSubmit}
-                    buttonAction2={() => setShowClientTypeModal(false)}
-                    showCloseButton={true}
-                >
-                    <div className="row g-3 text-start">
-                        <div className="col-12">
-                            <label className="form-label fw-bold">Client Type Name</label>
-                            <input
-                                type="text"
-                                className="form-control"
-                                placeholder="e.g. Premium Partner"
-                                value={clientTypeForm.name || ""}
-                                onChange={(e) => setClientTypeForm({ ...clientTypeForm, name: e.target.value })}
-                            />
-                        </div>
-                        <div className="col-12">
-                            <label className="form-label fw-bold">Abbreviation / Code</label>
-                            <input
-                                type="text"
-                                className="form-control abbreviation-input"
-                                placeholder="e.g. PP"
-                                maxLength={5}
-                                value={clientTypeForm.abbreviation || ""}
-                                onChange={(e) => setClientTypeForm({ ...clientTypeForm, abbreviation: e.target.value.toUpperCase() })}
-                            />
-                            <div className="form-text small">Short identifier used in tables and tags.</div>
-                        </div>
-                    </div>
-                </Modal>
-            )}
-
-            {showDeleteClientTypeModal && (
-                <Modal
-                    title="Delete Client Type"
-                    icon={<Trash2 size={24} />}
-                    message={`Are you sure you want to delete the client type "${selectedClientType?.name}"?`}
-                    buttonText1="Delete"
-                    buttonText2="Cancel"
-                    buttonAction1={handleDeleteClientType}
-                    buttonAction2={() => setShowDeleteClientTypeModal(false)}
-                    showCloseButton={true}
-                />
-            )}
+            <DeleteClientTypeModal
+                isOpen={showDeleteClientTypeModal}
+                onClose={() => setShowDeleteClientTypeModal(false)}
+                onSuccess={handleRefresh}
+                selectedClientType={selectedClientType}
+                key={`delete-client-type-${selectedClientType?.id ?? 'none'}-${showDeleteClientTypeModal}`}
+            />
         </Layout>
     );
 }

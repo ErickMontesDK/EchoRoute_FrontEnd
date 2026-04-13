@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, Lock, LogIn } from 'lucide-react';
+import { User, Lock, LogIn, Info } from 'lucide-react';
 import '../styles/login.css';
 import { api } from '../api/axiosInstance';
 import { getBusinessInfo } from '../features/business/api/businessServices';
@@ -149,14 +149,27 @@ export default function Login() {
                             )}
                         </button>
                         {demo_mode && (
-                            <div className="alert alert-warning small py-2 d-flex flex-column align-items-center mb-4">
-                                Demo mode active <br />
-                                You can see two example users:
-                                <ul>
-                                    <li>Administrator:<br /> admin | password: admin</li>
-                                    <br />
-                                    <li>Deliverer:<br /> deliverer | password: deliverer</li>
-                                </ul>
+                            <div className="demo-info mt-4 p-3 mb-4">
+                                <div className="d-flex align-items-center gap-2 mb-3 text-warning-emphasis fw-bold small">
+                                    <Info size={16} />
+                                    <span>Access Information (Demo)</span>
+                                </div>
+                                <div className="row g-2">
+                                    <div className="col-6">
+                                        <div className="demo-credential-card h-100">
+                                            <div className="tiny-label">Administrator</div>
+                                            <div className="fw-bold text-dark">admin</div>
+                                            <div className="text-muted small">echo1234</div>
+                                        </div>
+                                    </div>
+                                    <div className="col-6">
+                                        <div className="demo-credential-card h-100">
+                                            <div className="tiny-label">Deliverer</div>
+                                            <div className="fw-bold text-dark">deliverer</div>
+                                            <div className="text-muted small">echo1234</div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         )}
                     </form>

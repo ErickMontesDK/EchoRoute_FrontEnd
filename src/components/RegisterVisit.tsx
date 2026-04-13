@@ -17,6 +17,7 @@ interface DetectedCode {
 
 }
 
+const isDemoMode = process.env.REACT_APP_DEMO_MODE === "True";
 export default function RegisterVisit() {
     const navigate = useNavigate();
 
@@ -50,11 +51,14 @@ export default function RegisterVisit() {
     const [isClientFound, setIsClientFound] = useState(false);
     const [scanError, setScanError] = useState("");
     const [inputCode, setInputCode] = useState("");
+    const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
 
     const lookupClient = (code: string) => {
         if (!code.trim()) return;
 
         setIsScannerLoading(true);
+        setIsScannerPaused(true);
+        setIsScannerUsed(true);
         setScanError("");
         setIsClientFound(false);
 
@@ -71,8 +75,6 @@ export default function RegisterVisit() {
                 setInputCode(data.code); // Sync input with normalized code
                 gettingDatetime();
                 setIsClientFound(true);
-                setIsScannerUsed(true);
-                setIsScannerPaused(true);
             })
             .catch(error => {
                 setScanError(error.response?.data?.detail || "Client not found or network error.");
@@ -131,6 +133,11 @@ export default function RegisterVisit() {
         if (!isClientFound || !clientId) {
             setErrorMessage("Please scan a client code before registering.");
             window.scrollTo({ top: 0, behavior: 'smooth' });
+            return;
+        }
+
+        if (isDemoMode) {
+            setIsDemoModalOpen(true);
             return;
         }
 
@@ -373,7 +380,7 @@ export default function RegisterVisit() {
                             isVertical={true}
                         />
                     )}
-
+                    
                     {errorMessage && (
                         <Modal
                             title="Oops! Something went wrong"
@@ -382,6 +389,20 @@ export default function RegisterVisit() {
                             buttonText2={<><Home size={20} className="me-2" />Back to Home</>}
                             buttonAction1={() => setErrorMessage("")}
                             buttonAction2={() => navigate("/home")}
+                            icon={<AlertCircle size={48} />}
+                            variant="danger"
+                        />
+                    )}
+
+                    {isDemoModalOpen && (
+                        <Modal
+                            title="Demo Mode"
+                            message="This action is not allowed in Demo Mode. To protect data integrity, recording new visits is disabled in this environment."
+                            buttonText1={<><Home size={20} className="me-2" />Back to Home</>}
+                            buttonText2={""}
+                            buttonAction1={() => navigate("/home")}
+                            buttonAction2={() => {}}
+                            variant="info"
                             icon={<AlertCircle size={48} />}
                         />
                     )}
