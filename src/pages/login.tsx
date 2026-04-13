@@ -4,6 +4,7 @@ import { User, Lock, LogIn } from 'lucide-react';
 import '../styles/login.css';
 import { api } from '../api/axiosInstance';
 import { getBusinessInfo } from '../features/business/api/businessServices';
+const demo_mode = process.env.REACT_APP_DEMO_MODE === "True";
 
 export default function Login() {
     const [username, setUsername] = useState("");
@@ -147,7 +148,19 @@ export default function Login() {
                                 </>
                             )}
                         </button>
+                        {demo_mode && (
+                            <div className="alert alert-warning small py-2 d-flex flex-column align-items-center mb-4">
+                                Demo mode active <br />
+                                You can see two example users:
+                                <ul>
+                                    <li>Administrator:<br /> admin | password: admin</li>
+                                    <br />
+                                    <li>Deliverer:<br /> deliverer | password: deliverer</li>
+                                </ul>
+                            </div>
+                        )}
                     </form>
+
                 </div>
             </div>
         </div>
