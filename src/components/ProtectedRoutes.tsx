@@ -55,5 +55,10 @@ export default function ProtectedRoutes({ allowedRoles }: { allowedRoles: string
     if (!allowedRoles.includes(role)) {
         return <Navigate to="/home" />;
     }
+
+    if (localStorage.getItem("in_session") !== "true") {
+        clearAuthData();
+        return <Navigate to="/login" />;
+    }
     return <Outlet />;
 }

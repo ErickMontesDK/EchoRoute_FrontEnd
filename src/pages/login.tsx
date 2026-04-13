@@ -75,6 +75,7 @@ export default function Login() {
             localStorage.setItem("username", userData.data.username);
             localStorage.setItem("business_name", businessInfo.name);
             localStorage.setItem("logo_url", businessInfo.logo);
+            localStorage.setItem("in_session", "true");
 
             const businessData = await getBusinessInfo();
             localStorage.setItem("business_data", JSON.stringify(businessData));

@@ -31,6 +31,7 @@ export default function Sidebar({ role, name, isOpen, setIsOpen }: SidebarVars) 
             console.error('Logout failed:', error);
         } finally {
             clearAuthData();
+            localStorage.removeItem("in_session");
             window.location.href = "/login";
         }
     };
