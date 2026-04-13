@@ -2,7 +2,7 @@
     "routes": [
         {
             "src": "/backend/(.*)",
-            "dest": "https://estimated-chicky-gustachos-c1be7cda.koyeb.app/api/$1",
+            "dest": "https://gustachos-backend.onrender.com/api/$1",
             "headers": {
                 "X-Forwarded-Host": "gustachos.vercel.app"
             },
