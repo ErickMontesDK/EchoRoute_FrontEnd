@@ -4,7 +4,7 @@
             "src": "/backend/(.*)",
             "dest": "https://echoroute-backend.onrender.com/api/$1",
             "headers": {
-                "X-Forwarded-Host": "echoroute-frontend.vercel.app"
+                "X-Forwarded-Host": "echoroute-wine.vercel.app"
             },
             "methods": [
                 "GET",
