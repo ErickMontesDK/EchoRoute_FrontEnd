@@ -63,9 +63,9 @@ export default function Modal({
     );
 
     return (
-        <div className="modal fade show d-block" tabIndex={-1} style={{ backgroundColor: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }}>
-            <div className="modal-dialog modal-dialog-centered" style={{ maxWidth: '700px' }}>
-                <div className="modal-content border-0 shadow-lg" style={{ borderRadius: '24px', overflow: 'hidden' }}>
+        <div className="modal fade show d-block" tabIndex={-1} style={{ backgroundColor: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)' }}>
+            <div className="modal-dialog modal-dialog-centered modal-sm-mobile">
+                <div className="modal-content border-0 shadow-lg" style={{ borderRadius: '28px', overflow: 'hidden' }}>
                     {showCloseButton && (
                         <button
                             type="button"
@@ -76,13 +76,13 @@ export default function Modal({
                     )}
 
 
-                    <div className="modal-body p-5 text-center">
+                    <div className="modal-body p-4 p-md-5 text-center">
                         {icon &&
-                            <div className="mb-4 d-inline-flex align-items-center justify-content-center" style={{ width: '80px', height: '80px', backgroundColor: `var(--${variant}-subtle)`, borderRadius: '50%', color: `var(--${variant}-color)` }}>
+                            <div className="mb-4 d-inline-flex align-items-center justify-content-center modal-icon-box" style={{ backgroundColor: `var(--${variant}-subtle)`, color: `var(--${variant}-color)` }}>
                                 {icon}
                             </div>
                         }
-                        <h2 className="fw-bold mb-3" style={{ letterSpacing: '-0.025em' }}>{title}</h2>
+                        <h2 className="fw-bold mb-3 modal-title-custom">{title}</h2>
                         <p className="text-muted mb-4">
                             {message}
                         </p>

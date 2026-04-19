@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Layout from "./Layout";
 import { useNavigate } from "react-router-dom";
-import { QrCode, ClipboardList, MapPin, User, CheckCircle2, AlertCircle, Store, Home, RefreshCw } from "lucide-react";
+import { QrCode, ClipboardList, MapPin, User, CheckCircle2, AlertCircle, Store, Home, RefreshCw, Copy, Check, FileText, Calendar, Clock } from "lucide-react";
 import '../styles/register-visit.css';
 import CodeScannerComponent from "./CodeScanner";
 import Modal from "./modal";
@@ -52,6 +52,8 @@ export default function RegisterVisit() {
     const [scanError, setScanError] = useState("");
     const [inputCode, setInputCode] = useState("");
     const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
+    const [isCopied, setIsCopied] = useState(false);
+    const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
 
     const lookupClient = (code: string) => {
         if (!code.trim()) return;
@@ -124,6 +126,19 @@ export default function RegisterVisit() {
         setErrorMessage("");
         setScanError("");
         setInputCode("");
+        setIsCopied(false);
+    }
+
+    const handleCopyCode = () => {
+        if (!clientData.code) return;
+        navigator.clipboard.writeText(clientData.code)
+            .then(() => {
+                setIsCopied(true);
+                setTimeout(() => setIsCopied(false), 2000);
+            })
+            .catch(err => {
+                console.error('Failed to copy: ', err);
+            });
     }
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -136,6 +151,12 @@ export default function RegisterVisit() {
             return;
         }
 
+        setIsConfirmModalOpen(true);
+    }
+
+    const handleConfirmRegistration = () => {
+        setIsConfirmModalOpen(false);
+
         if (isDemoMode) {
             setIsDemoModalOpen(true);
             return;
@@ -143,7 +164,7 @@ export default function RegisterVisit() {
 
         setIsSubmitting(true);
         registerVisit({
-            client: clientId,
+            client: clientId!,
             visited_at: datetime,
             latitude_recorded: latitude,
             longitude_recorded: longitude,
@@ -152,6 +173,7 @@ export default function RegisterVisit() {
         })
             .then(() => {
                 setIsSuccess(true);
+                handleCopyCode();
             })
             .catch(error => {
                 setErrorMessage(error.response?.data?.detail || "An error occurred while registering the visit. Please try again.");
@@ -196,8 +218,8 @@ export default function RegisterVisit() {
                                                 ? "Client Found"
                                                 : "Client Not Found. Retry?"
                                             : isScannerLoading
-                                            ? "Scanning..."
-                                            : "Scan Code"}
+                                                ? "Scanning..."
+                                                : "Scan Code"}
                                     </button>
                                 )}
                                 {!isScannerPaused && (
@@ -294,7 +316,21 @@ export default function RegisterVisit() {
                                                 <QrCode size={14} className="me-1" />
                                                 Verified Code
                                             </span>
-                                            <input type="text" className="info-value" value={clientData.code} readOnly />
+                                            <div className="d-flex align-items-center gap-2">
+                                                <input type="text" className="info-value flex-grow-1" value={clientData.code} readOnly />
+                                                <button
+                                                    type="button"
+                                                    className="btn btn-copy-code d-flex align-items-center justify-content-center"
+                                                    onClick={handleCopyCode}
+                                                    title="Copy code"
+                                                >
+                                                    {isCopied ? (
+                                                        <Check size={18} className="text-success animate-zoom-in" />
+                                                    ) : (
+                                                        <Copy size={18} className="text-primary" />
+                                                    )}
+                                                </button>
+                                            </div>
                                         </div>
                                         <div className="info-item">
                                             <span className="info-label">
@@ -368,6 +404,58 @@ export default function RegisterVisit() {
                         </button>
                     </form>
 
+                    {isConfirmModalOpen && (
+                        <Modal
+                            title="Confirm Visit Details"
+                            message="Please review the information below before recording the visit."
+                            buttonText1={<><CheckCircle2 size={20} className="me-2" />Confirm & Register</>}
+                            buttonText2="Edit Details"
+                            buttonAction1={handleConfirmRegistration}
+                            buttonAction2={() => setIsConfirmModalOpen(false)}
+                            icon={<FileText size={48} />}
+                            variant="info"
+                        >
+                            <div className="confirm-summary text-start">
+                                <div className="summary-item">
+                                    <div className="summary-label">
+                                        <User size={14} className="me-1" /> Client
+                                    </div>
+                                    <div className="summary-value">{clientData.name} <span className="text-muted small">({clientData.code})</span></div>
+                                </div>
+                                <div className="summary-row">
+                                    <div className="summary-item">
+                                        <div className="summary-label">
+                                            <Calendar size={14} className="me-1" /> Date
+                                        </div>
+                                        <div className="summary-value">{new Date(datetime).toLocaleDateString()}</div>
+                                    </div>
+                                    <div className="summary-item">
+                                        <div className="summary-label">
+                                            <Clock size={14} className="me-1" /> Time
+                                        </div>
+                                        <div className="summary-value">{new Date(datetime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                                    </div>
+                                </div>
+                                <div className="summary-item">
+                                    <div className="summary-label">
+                                        <CheckCircle2 size={14} className="me-1" /> Status
+                                    </div>
+                                    <div className={`summary-badge ${isProductive ? 'productive' : 'non-productive'}`}>
+                                        {isProductive ? 'Productive Visit' : 'Non-Productive Visit'}
+                                    </div>
+                                </div>
+                                {notes && (
+                                    <div className="summary-item">
+                                        <div className="summary-label">
+                                            <ClipboardList size={14} className="me-1" /> Notes
+                                        </div>
+                                        <div className="summary-notes">{notes}</div>
+                                    </div>
+                                )}
+                            </div>
+                        </Modal>
+                    )}
+
                     {isSuccess && (
                         <Modal
                             title="Visit Registered!"
@@ -378,9 +466,21 @@ export default function RegisterVisit() {
                             buttonAction2={() => navigate("/home")}
                             icon={<CheckCircle2 size={48} />}
                             isVertical={true}
-                        />
+                        >
+                            <div className="success-copy-section mb-4">
+                                <p className="small text-muted mb-2 text-uppercase fw-bold" style={{ letterSpacing: '0.05em' }}>
+                                    External Code
+                                </p>
+                                <div className="success-copy-box justify-content-center">
+                                    <code className="success-code">{clientData.code}</code>
+                                </div>
+                                <div className="d-flex align-items-center justify-content-center mt-2 text-success fw-bold small animate-zoom-in">
+                                    <Check size={16} className="me-1" /> COPIED TO CLIPBOARD
+                                </div>
+                            </div>
+                        </Modal>
                     )}
-                    
+
                     {errorMessage && (
                         <Modal
                             title="Oops! Something went wrong"
@@ -401,7 +501,7 @@ export default function RegisterVisit() {
                             buttonText1={<><Home size={20} className="me-2" />Back to Home</>}
                             buttonText2={""}
                             buttonAction1={() => navigate("/home")}
-                            buttonAction2={() => {}}
+                            buttonAction2={() => { }}
                             variant="info"
                             icon={<AlertCircle size={48} />}
                         />
