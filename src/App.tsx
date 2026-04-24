@@ -11,6 +11,7 @@ import UsersData from './features/users/components/UsersData';
 import Profile from './components/Profile';
 import BusinessData from './features/business/components/BusinessData';
 import { useEffect } from 'react';
+import BackendHealthCheck from './components/BackendHealthCheck';
 
 function App() {
   useEffect(() => {
@@ -26,34 +27,36 @@ function App() {
   }, []);
 
   return (
-    <Router>
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route element={<ProtectedRoutes allowedRoles={['admin', 'operator', 'delivery']} />}>
-          <Route path="/home" element={<Home />} />
-          <Route path="/profile" element={<Profile />} />
-        </Route>
-        <Route element={<ProtectedRoutes allowedRoles={['delivery']} />}>
-          <Route path="/register-visit" element={<RegisterVisit />} />
-        </Route>
-        <Route element={<ProtectedRoutes allowedRoles={['admin', 'operator']} />}>
-          <Route path="/visits-data" element={<VisitsData />} />
-        </Route>
-        <Route element={<ProtectedRoutes allowedRoles={['admin', 'operator']} />}>
-          <Route path="/clients-data" element={<ClientsData />} />
-        </Route>
-        <Route element={<ProtectedRoutes allowedRoles={['delivery']} />}>
-          <Route path="/register-client" element={<RegisterClient />} />
-        </Route>
-        <Route element={<ProtectedRoutes allowedRoles={['admin']} />}>
-          <Route path="/users-data" element={<UsersData />} />
-        </Route>
-        <Route element={<ProtectedRoutes allowedRoles={['admin']} />}>
-          <Route path="/business-data" element={<BusinessData />} />
-        </Route>
-        <Route path="*" element={<Navigate to="/home" />} />
-      </Routes>
-    </Router>
+    <BackendHealthCheck>
+      <Router>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route element={<ProtectedRoutes allowedRoles={['admin', 'operator', 'delivery']} />}>
+            <Route path="/home" element={<Home />} />
+            <Route path="/profile" element={<Profile />} />
+          </Route>
+          <Route element={<ProtectedRoutes allowedRoles={['delivery']} />}>
+            <Route path="/register-visit" element={<RegisterVisit />} />
+          </Route>
+          <Route element={<ProtectedRoutes allowedRoles={['admin', 'operator']} />}>
+            <Route path="/visits-data" element={<VisitsData />} />
+          </Route>
+          <Route element={<ProtectedRoutes allowedRoles={['admin', 'operator']} />}>
+            <Route path="/clients-data" element={<ClientsData />} />
+          </Route>
+          <Route element={<ProtectedRoutes allowedRoles={['delivery']} />}>
+            <Route path="/register-client" element={<RegisterClient />} />
+          </Route>
+          <Route element={<ProtectedRoutes allowedRoles={['admin']} />}>
+            <Route path="/users-data" element={<UsersData />} />
+          </Route>
+          <Route element={<ProtectedRoutes allowedRoles={['admin']} />}>
+            <Route path="/business-data" element={<BusinessData />} />
+          </Route>
+          <Route path="*" element={<Navigate to="/home" />} />
+        </Routes>
+      </Router>
+    </BackendHealthCheck>
   );
 }
 
